@@ -1,0 +1,7 @@
+auto-save-list
+saves
+*~
+elpa
+url
+tramp
+*.elc
