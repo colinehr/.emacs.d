@@ -90,3 +90,6 @@
 
 ;; LaTeX mode
 (setq latex-run-command "pdflatex")
+
+;; Magit
+(setq magit-set-upstream-on-push t)
