@@ -5,3 +5,4 @@ elpa
 url
 tramp
 *.elc
+session.*

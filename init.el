@@ -1,5 +1,5 @@
-;; Emacs configuration file
-;; this is under construction
+;; init.el -- Starting Emacs configuration file
+;; Intended for use with Emacs 24 only 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; APPEARANCE
@@ -20,24 +20,27 @@
 (add-to-list 'default-frame-alist '(height . 50))
 (add-to-list 'default-frame-alist '(width . 100))
 
+;; Highlight the corresponding parentheses
 (show-paren-mode t)
 
-(setq inhibit-splash-screen t)
+;; Don't show the splash screen
+(setq inhibit-startup-screen t)
+
+;; Don't show dialog boxes
 (setq use-dialog-box "n")
 
-(require 'cc-mode)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; GENERAL SETTINGS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
-(global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-cb" 'org-iswitchb)
-(add-hook 'org-mode-hook 'turn-on-font-lock)
+;; Work in UTF-8
+(setq locale-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
 
-(require 'linum)
-(setq linum-format "%d")
-(global-linum-mode 1)
-
-;; backup settings and version control
+;; Backup settings and version control
 (setq backup-by-copying t
       backup-directory-alist '(("." . "~/.emacs.d/saves"))
       delete-old-versions t
@@ -45,20 +48,28 @@
       kept-old-versions 2
       version-control t)
 
-;; make tab a tab
-;(setq c-default-style "k&r")
+;; Save custom settings in separate file
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file)
+
+;; Indentation
 (setq-default c-basic-offset 4)
-;(define-key c-mode-base-map (kbd "RET") 'newline-and-indent)
-;(define-key c-mode-base-map (kbd "C-j") 'newline)
 (electric-indent-mode t)
 
-;; line by line scrolling
+;; Scrolling
 (setq scroll-step 1)
+
+;; Show keystrokes immediately
+(setq echo-keystrokes 0.1)
+
+;; Auto-refresh buffers
+(global-auto-revert-mode 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PACKAGES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Load repositories
 (defvar gnu '("gnu" . "http://elpa.gnu.org/packages/"))
 (defvar marmalade '("marmalade" . "http://marmalade-repo.org/packages/"))
 (defvar melpa '("melpa" . "http://melpa.milkbox.net/packages/"))
@@ -84,12 +95,39 @@
   (package-initialize)
   (delete-other-windows))
 
+(defun get-packages ()
+  (packages-install
+   (cons 'auctex gnu)
+   (cons 'magit melpa)
+   (cons 'gist melpa)))
+
+(condition-case nil
+    (get-packages)
+  (error
+   (package-refresh-contents)
+    (get-packages)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PACKAGE-SPECIFIC SETTINGS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; LaTeX mode
-(setq latex-run-command "pdflatex")
+;; AUCTeX
+(setq TeX-PDF-mode t)
+(defun pdfevince ()
+   (add-to-list 'TeX-output-view-style 
+                    (quote ("^pdf$" "." "evince %o %(outpage)")))
+)
+(add-hook 'LaTeX-mode-hook 'pdfevince t)
+
+;; Linum
+(setq linum-format "%d")
+(global-linum-mode 1)
 
 ;; Magit
-(setq magit-set-upstream-on-push t)
+(global-set-key (kbd "C-c g") 'magit-status)
+
+;; Org-mode
+(global-set-key "\C-cl" 'org-store-link)
+(global-set-key "\C-ca" 'org-agenda)
+(global-set-key "\C-cb" 'org-iswitchb)
+(add-hook 'org-mode-hook 'turn-on-font-lock)
