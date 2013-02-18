@@ -119,6 +119,14 @@
 )
 (add-hook 'LaTeX-mode-hook 'pdfevince t)
 
+;; Eclim
+(require 'cl)
+(require 'eclim)
+(require 'eclimd)
+(setq eclim-executable "/opt/eclipse/eclim")
+(setq eclim-auto-save t)
+(global-eclim-mode)
+
 ;; Linum
 (setq linum-format "%d")
 (global-linum-mode 1)

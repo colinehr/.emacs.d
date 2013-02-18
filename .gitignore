@@ -6,3 +6,4 @@ url
 tramp
 *.elc
 session.*
+#*#
