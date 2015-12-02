@@ -14,7 +14,7 @@
 (load-theme 'tango-dark t)
 
 ;; Font
-(set-default-font "Terminus-9")
+(set-default-font "DejaVu Sans Mono-8")
 
 ;; Window size
 (add-to-list 'default-frame-alist '(height . 50))
@@ -91,7 +91,7 @@
 ;; Load repositories
 (defvar gnu '("gnu" . "http://elpa.gnu.org/packages/"))
 (defvar marmalade '("marmalade" . "http://marmalade-repo.org/packages/"))
-(defvar melpa '("melpa" . "http://melpa.milkbox.net/packages/"))
+(defvar melpa '("melpa" . "http://melpa.org/packages/"))
 
 (setq package-archives (list gnu marmalade melpa))
 
@@ -117,9 +117,8 @@
 (defun get-packages ()
   (packages-install
    (cons 'auctex gnu)
-   (cons 'auto-complete gnu)
-   (cons 'magit melpa)
-   (cons 'gist melpa)))
+   (cons 'auto-complete melpa)
+   (cons 'magit melpa)))
 
 (condition-case nil
     (get-packages)
@@ -149,6 +148,21 @@
       :help "Run XeLaTeX on file")
     TeX-command-list)))
 (add-hook 'TeX-parse-self t)
+
+(add-hook 'LaTeX-mode-hook
+	  (lambda ()
+	    (LaTeX-add-environments
+	     '("definition" LaTeX-env-label)
+	     '("proposition" LaTeX-env-label)
+	     '("theorem" LaTeX-env-label))))
+
+(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+(setq reftex-plug-into-AUCTeX t)
+(setq reftex-label-alist
+      '(("definition"  ?d "def:"  "~\\ref{%s}" t ("definition" "def.")         )
+	("lemma"       ?l "lem:"  "~\\ref{%s}" t ("lemma" "lem.")              )
+	("proposition" ?p "prop:" "~\\ref{%s}" t ("proposition" "prop." "pr.") )
+	("theorem"     ?t "thm:"  "~\\ref{%s}" t ("theorem" "thm." "th.")      )))
 
 ;; Auto-complete
 (require 'auto-complete-config)
